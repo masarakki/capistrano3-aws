@@ -46,6 +46,21 @@ task :set_instances do
   role :db, hosts.first
 end
 
+## Blue-Green Deploy
+#  deregister half of instances from ELB, then apply block, and register.
+task :restart do
+  bluegreen(:web, 'elb-arn') do
+    execute :sudo, "restart rails"
+    loop do
+      begin
+        execute :curl, "-s http://localhost:3000/"
+        break
+      rescue
+      end
+    end
+  end
+end
+
 after :staging, :set_instances
 ```
 
