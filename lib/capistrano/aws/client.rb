@@ -15,9 +15,15 @@ module Capistrano
     def ec2
       @ec2 ||= AutoMapping.new(
         fetch(:aws_regions).map do |region|
-          ::Aws::EC2::Client.new(access_key_id: credentials.access_key_id,
-                                 secret_access_key: credentials.secret_access_key,
-                                 region: region)
+          ::Aws::EC2::Client.new(credentials: credentials, region: region)
+        end
+      )
+    end
+
+    def elb
+      @elb ||= AutoMapping.new(
+        fetch(:aws_regions).map do |region|
+          ::Aws::ElasticLoadBalancingV2::Client.new(credentials: credentials, region: region)
         end
       )
     end
